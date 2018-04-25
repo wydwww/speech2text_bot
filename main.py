@@ -1,8 +1,8 @@
+#coding:utf-8
 import telegram
 import logging
-import tempfile
+import tempfile, requests, html
 import pydub
-from tinytag import TinyTag
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 # Enable logging
@@ -38,13 +38,16 @@ def speech2text(bot, update):
     keys = '5c60e996479747ceabfc7ea0e766ee89'
     chat_id = update.message.chat_id
     bot.getFile(update.message.voice.file_id).download('voice.ogg')
+#    lang = 'en-US'
     lang = 'zh-CN'
     file = open('voice.ogg', 'rb')
+    print('open voice file')
 
     with tempfile.NamedTemporaryFile() as f:
         audio = pydub.AudioSegment.from_file(file)
         audio = audio.set_frame_rate(16000)
         audio.export(f.name, format="wav")
+        print('wav exported')
         header = {
             "Ocp-Apim-Subscription-Key": keys,
             "Content-Type": "audio/wav; samplerate=16000"
@@ -54,19 +57,25 @@ def speech2text(bot, update):
             "format": "detailed",
         }
         f.seek(0)
+        print('request posted')
         r = requests.post("https://speech.platform.bing.com/speech/recognition/conversation/cognitiveservices/v1",
                           params=d, data=f.read(), headers=header)
 
+        print(r.json())
         try:
             rjson = r.json()
         except ValueError:
+            print('error')
             return [self._("ERROR!"), r.text]
-
         if r.status_code == 200:
-            return [i['Display'] for i in rjson['NBest']]
+            sentense = [i['Display'] for i in rjson['NBest']][0]
+#            sentense = html.escape(sentense)
+            print('done')
+#            return [i['Display'] for i in rjson['NBest']]
+            update.message.reply_text(sentense)
         else:
+            print('error2')
             return [self._("ERROR!"), r.text]
-
     
 
 def main():
