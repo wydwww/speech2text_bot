@@ -18,7 +18,7 @@ logging.basicConfig(filename='speech.log',
 logger = logging.getLogger(__name__)
 
 TOKEN = "566437247:AAH1rLQyW2Sb-5sljOBwPYkZbgO2oQSZfC0"
-
+BUCKET_NAME = "speech_to_text_bot"
 def start(bot, update):
     """Send a message when the command /start is issued."""
     update.message.reply_text('Hi!')
@@ -53,7 +53,9 @@ def speech2text(bot, update):
     if to_gs:
         storage_client = storage.Client()
 
+        #bucket = storage_client.get_bucket(BUCKET_NAME)
         bucket = storage_client.get_bucket(BUCKET_NAME)
+        print('Bucket {} got'.format(bucket.name))
         blob = bucket.blob('voice.ogg')
         blob.upload_from_filename('voice.ogg')
         audio = types.RecognitionAudio(uri='gs://' + BUCKET_NAME + '/voice.ogg')
