@@ -47,7 +47,7 @@ def speech2text(bot, update):
     audio = audio.set_frame_rate(16000)
     audio.export('voice.wav', format="wav")
     print('wav exported')
-    other_program = '/home/wydwww/program/cruzhacks2018/client.py'
+    other_program = './cruzhacks2018/client.py'
     script = ['/home/wydwww/py3/bin/python', other_program, keys, lang, 'simple', 'conversation', './voice.wav']
     print('run script')
     proc = subprocess.Popen(script, stdout=subprocess.PIPE)

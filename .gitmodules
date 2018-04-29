@@ -1,0 +1,3 @@
+[submodule "cruzhacks2018"]
+	path = cruzhacks2018
+	url = https://github.com/jjuraska/cruzhacks2018.git
