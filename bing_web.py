@@ -1,4 +1,5 @@
-#coding:utf-8
+# Cite some code from python-api-example, 
+
 import telegram
 import logging
 import tempfile, requests, subprocess
@@ -12,6 +13,7 @@ logging.basicConfig(filename='speech.log',
 
 logger = logging.getLogger(__name__)
 
+# your bot token
 TOKEN = "566437247:AAH1rLQyW2Sb-5sljOBwPYkZbgO2oQSZfC0"
 
 def start(bot, update):
@@ -27,6 +29,7 @@ def help(bot, update):
 def echo(bot, update):
     """Echo the user message."""
     update.message.reply_text(update.message.text)
+    logger.info('receive message {}'.format(update.message.text))
 
 
 def error(bot, update, error):
@@ -35,26 +38,25 @@ def error(bot, update, error):
 
 
 def speech2text(bot, update):
+    # your bing speech api key
     keys = '78736a862d724cd68845c9da96c81b10'
     chat_id = update.message.chat_id
-    bot.getFile(update.message.voice.file_id).download('voice.ogg')
+    bot.getFile(update.message.voice.file_id).download('voice-{}.ogg'.format(chat_id))
 #    lang = 'en-US'
     lang = 'zh-CN'
-    file = open('voice.ogg', 'rb')
-    print('open voice file')
+    file = open('voice-{}.ogg'.format(chat_id), 'rb')
 
     audio = pydub.AudioSegment.from_file(file)
     audio = audio.set_frame_rate(16000)
-    audio.export('voice.wav', format="wav")
-    print('wav exported')
+    audio.export('voice-{}.wav'.format(chat_id), format="wav")
+    logger.info('wav exported')
     other_program = './cruzhacks2018/client.py'
-    script = ['/home/wydwww/py3/bin/python', other_program, keys, lang, 'simple', 'conversation', './voice.wav']
-    print('run script')
+    script = ['/home/wydwww/py3/bin/python', other_program, keys, lang, 'simple', 'conversation', './voice-{}.wav'.format(chat_id)]
     proc = subprocess.Popen(script, stdout=subprocess.PIPE)
     output = proc.stdout.readlines()[-2]
-    print(output.decode('UTF-8')[22:])
+    logger.info('Update "%s" receieved text "%s"', update, output.decode('UTF-8')[22:])
     update.message.reply_text(output.decode('UTF-8')[22:])
-    print('message sent')
+    logger.info('message sent')
 
 
 def main():
