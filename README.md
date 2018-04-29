@@ -5,4 +5,4 @@ Speech to text telegram bot, implemented with bing speech api, based on [jjurask
 some python packages and system binary programs.
 
 # usage
-replace bot api token and bing speech api, and run.
+replace bot api token, bing speech api and language code, modify python path, then run.
